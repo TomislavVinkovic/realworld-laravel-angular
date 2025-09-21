@@ -4,6 +4,8 @@ namespace App\Models;
 
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Tymon\JWTAuth\Contracts\JWTSubject;
@@ -22,6 +24,7 @@ class User extends Authenticatable implements JWTSubject
         'name',
         'email',
         'password',
+        'bio'
     ];
 
     /**
@@ -45,6 +48,27 @@ class User extends Authenticatable implements JWTSubject
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
         ];
+    }
+
+    // relationships
+    public function image() : HasOne {
+        return $this->hasOne(Image::class);
+    }
+    public function followers(): BelongsToMany {
+        return $this->belongsToMany(
+            User::class,
+            'following',
+            'following_id',
+            'follower_id'
+        );
+    }
+    public function following(): BelongsToMany {
+        return $this->belongsToMany(
+            User::class,
+            'following',
+            'follower_id',
+            'following_id'
+        );
     }
 
     public function getJWTIdentifier()
