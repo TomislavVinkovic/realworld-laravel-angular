@@ -5,14 +5,17 @@ use App\Http\Controllers\AuthController;
 use App\Http\Controllers\ProfileController;
 use Illuminate\Support\Facades\Route;
 
-Route::controller(AuthController::class)
-    ->prefix('users')
-    ->group(
-        function() {
-            Route::get('login', 'login');
-            Route::post('', 'register');
-        }
-    );
+Route::middleware('anonymous')->group(function() {
+    Route::controller(AuthController::class)
+        ->prefix('users')
+        ->group(
+            function() {
+                Route::get('login', 'login');
+                Route::post('', 'register');
+            }
+        );
+});
+    
 
 Route::get('profiles/{user}', [ProfileController::class, 'show']);
 
@@ -47,6 +50,5 @@ Route::middleware('jwt')->group(function() {
                 Route::put('{article}', 'update');
                 Route::delete('{article}', 'update');
             }
-        );
-    
+        ); 
 }); 
