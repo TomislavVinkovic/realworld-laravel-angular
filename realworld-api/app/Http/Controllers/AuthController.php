@@ -20,7 +20,7 @@ use Tymon\JWTAuth\Facades\JWTAuth;
 class AuthController extends Controller
 {
     public function login(LoginRequest $request) {
-        $credentials = $request->only('email', 'password');
+        $credentials = $request->validated();
 
         $token = null;
 
@@ -43,12 +43,11 @@ class AuthController extends Controller
     }
 
     public function register(RegisterRequest $request) {
-        $user = User::create([
-            'name' => $request->username,
-            'email' => $request->email,
-            'password' => Hash::make($request->password)
-        ]);
+        $data = $request->validated();
+        $data['password'] = Hash::make($data['password']);
 
+        $user = User::create($data);
+        
         $token = null;
 
         try {

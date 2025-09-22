@@ -22,6 +22,7 @@ class ArticleUpdateRequest extends FormRequest
     public function rules(): array
     {
         return [
+            'article' => ['required', 'array:title,description,body'],
             'title' => ['nulable', 'string'],
             'description' => ['nulable', 'string'],
             'body' => ['nulable', 'string'],

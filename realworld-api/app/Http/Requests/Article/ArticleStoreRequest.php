@@ -22,10 +22,11 @@ class ArticleStoreRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'title' => ['required', 'string'],
-            'description' => ['required', 'string'],
-            'body' => ['required', 'string'],
-            'tagList' => ['nullable', 'array']
+            'article' => ['required', 'array:title,description,body,tagList'],
+            'article.title' => ['required', 'string'],
+            'article.description' => ['required', 'string'],
+            'article.body' => ['required', 'string'],
+            'article.tagList' => ['nullable', 'array']
         ];
     }
 }

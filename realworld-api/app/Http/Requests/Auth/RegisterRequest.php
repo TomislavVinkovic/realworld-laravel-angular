@@ -3,7 +3,7 @@
 namespace App\Http\Requests\Auth;
 
 use Illuminate\Foundation\Http\FormRequest;
-use Illuminate\Support\Facades\Password;
+use Illuminate\Validation\Rules\Password;
 
 class RegisterRequest extends FormRequest
 {
@@ -23,11 +23,11 @@ class RegisterRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'username' => ['required', 'unique:users', 'name'],
-            'email' => ['required', 'unique:users,email'],
-            'password' => [
+            'user' => ['required', 'array:username,email,password'],
+            'user.username' => ['required', 'unique:users,name'],
+            'user.email' => ['required', 'unique:users,email'],
+            'user.password' => [
                 'required', 
-                'confirmed', 
                 Password::min(8)
                     ->letters()
                     ->mixedCase()
@@ -36,5 +36,16 @@ class RegisterRequest extends FormRequest
                     ->uncompromised()
             ],
         ];
+    }
+
+    public function validated($key = null, $default = null)
+    {
+        $validatedData = parent::validated();
+        $userData = $validatedData['user'];
+        
+        $userData['name'] = $userData['username'];
+        unset($userData['username']);
+
+        return $userData;
     }
 }

@@ -14,6 +14,8 @@ class UserUpdateRequest extends FormRequest
         return true;
     }
 
+    // TODO: SQUASH DATA
+
     /**
      * Get the validation rules that apply to the request.
      *
@@ -22,9 +24,10 @@ class UserUpdateRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'email' => ['nullable', 'email', 'unique:users,email'],
-            'bio' => ['nullable', 'string'],
-            'image' => ['nullable', 'image', 'extensions:jpg,jpeg,png,bmp']
+            'user' => ['required', 'array:email,bio,image'],
+            'user.email' => ['nullable', 'email', 'unique:users,email'],
+            'user.bio' => ['nullable', 'string'],
+            'user.image' => ['nullable', 'image', 'extensions:jpg,jpeg,png,bmp']
         ];
     }
 }

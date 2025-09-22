@@ -23,7 +23,7 @@ class UserResource extends JsonResource
             'token' => $this->token,
             'username' => $this->name,
             'bio' => $this->bio,
-            'image' => $this->image->publicUrl
+            'image' => $this->image?->publicUrl,
         ];
     }
 }

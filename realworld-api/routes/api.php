@@ -10,7 +10,7 @@ Route::middleware('anonymous')->group(function() {
         ->prefix('users')
         ->group(
             function() {
-                Route::get('login', 'login');
+                Route::post('login', 'login');
                 Route::post('', 'register');
             }
         );
@@ -33,9 +33,9 @@ Route::middleware('jwt')->group(function() {
         ->prefix('user')
         ->group(
             function() {
-                Route::get('', 'user');
+                Route::get('', 'show');
                 Route::get('logout', 'logout');
-                Route::put('', 'user');
+                Route::put('', 'update');
             }
         );
 

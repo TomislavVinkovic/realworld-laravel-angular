@@ -22,8 +22,17 @@ class LoginRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'email' => ['required', 'email', 'exists:users.email'],
-            'password' => ['required']
+            'user' => ['required', 'array:email,password'],
+            'user.email' => ['required', 'email', 'exists:users,email'],
+            'user.password' => ['required']
         ];
+    }
+
+    public function validated($key = null, $default = null)
+    {
+        $validatedData = parent::validated();
+        $userData = $validatedData['user'];
+
+        return $userData;
     }
 }
