@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Http\Resources\ProfileResource;
 use App\Models\User;
 
+
 class ProfileController extends Controller
 {
     public function show(User $user) {
@@ -13,11 +14,10 @@ class ProfileController extends Controller
         $authenticatedUser = auth('api')->user();
         $isFollowing = false;
 
-        if($authenticatedUser) {
-            $isFollowing = $authenticatedUser->following()
-                ->where('following_id', $user->id)
-                ->exists();
-        }
+        $isFollowing = $authenticatedUser->following()
+            ->where('following_id', $user->id)
+            ->exists();
+        
         $user->following = $isFollowing;
 
         return new ProfileResource($user);
@@ -27,11 +27,11 @@ class ProfileController extends Controller
         $authenticatedUser = auth('api')->user();
         $isFollowing = false;
 
-        if($authenticatedUser) {
-            $isFollowing = $authenticatedUser->following()
-                ->where('following_id', $user->id)
-                ->exists();
-        }
+
+        $isFollowing = $authenticatedUser->following()
+            ->where('following_id', $user->id)
+            ->exists();
+        
         if($isFollowing) {
             $authenticatedUser->following()->detach($user->id);
             $isFollowing = false;

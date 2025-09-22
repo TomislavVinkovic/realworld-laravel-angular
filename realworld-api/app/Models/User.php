@@ -70,6 +70,14 @@ class User extends Authenticatable implements JWTSubject
             'following_id'
         );
     }
+    public function favorites(): BelongsToMany {
+        return $this->belongsToMany(
+            Article::class,
+            'users_articles_favorites',
+            'user_id',
+            'article_id'
+        );
+    }
 
     public function getJWTIdentifier()
     {
