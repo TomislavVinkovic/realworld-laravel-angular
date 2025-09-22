@@ -11,6 +11,14 @@ class Article extends Model
 {
     protected $table = 'articles';
 
+    protected $fillable = [
+        'slug',
+        'title',
+        'description',
+        'body',
+        'tags'
+    ];
+
     // Relationships
     public function author(): BelongsTo {
         return $this->belongsTo(User::class, 'author_id');

@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Http\Resources\ProfileResource;
 use App\Models\User;
 
+// TODO: Refactor the controller using services and scopes to offload code
 
 class ProfileController extends Controller
 {

@@ -15,6 +15,8 @@ use Illuminate\Support\Facades\Storage;
 use Tymon\JWTAuth\Exceptions\JWTException;
 use Tymon\JWTAuth\Facades\JWTAuth;
 
+// TODO: Refactor the controller using services and scopes to offload code
+
 class AuthController extends Controller
 {
     public function login(LoginRequest $request) {
