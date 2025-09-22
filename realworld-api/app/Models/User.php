@@ -88,4 +88,9 @@ class User extends Authenticatable implements JWTSubject
     {
         return [];
     }
+
+    public function getRouteKeyName(): string
+    {
+        return 'name';
+    }
 }

@@ -74,11 +74,12 @@ class AuthController extends Controller
         return response()->json(['message' => 'Successfully logged out']);
     }
 
-    public function show(User $user) {
-        return new UserResource($user);
+    public function show() {
+        return new UserResource(auth('api')->user());
     }
 
-    public function update(UserUpdateRequest $request, User $user) {
+    public function update(UserUpdateRequest $request) {
+        $user = auth('api')->user();
         DB::beginTransaction();
 
         try {
