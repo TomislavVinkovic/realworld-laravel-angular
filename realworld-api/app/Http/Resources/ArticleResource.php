@@ -22,7 +22,7 @@ class ArticleResource extends JsonResource
             'title' => $this->title,
             'description' => $this->title,
             'body' => $this->body,
-            'tagList' => $this->tags,
+            'tagList' => $this->tag_list,
             'createdAt' => $this->created_at,
             'updatedAt' => $this->updated_at,
             'favorited' => $this->favorited,

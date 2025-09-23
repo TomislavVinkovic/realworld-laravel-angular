@@ -5,6 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Tymon\JWTAuth\Contracts\JWTSubject;
@@ -75,6 +76,12 @@ class User extends Authenticatable implements JWTSubject
             'users_articles_favorites',
             'user_id',
             'article_id'
+        );
+    }
+    public function articles(): HasMany {
+        return $this->hasMany(
+            Article::class,
+            'author_id'
         );
     }
 

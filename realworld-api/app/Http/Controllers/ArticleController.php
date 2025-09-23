@@ -20,9 +20,6 @@ class ArticleController extends Controller
      */
     public function index(Request $request)
     {
-        $authenticatedUser = auth('api')->user();
-        $authenticatedUser->load('favorites');
-
         $tag = $request->input('tag', null);
         $author = $request->input('author', null);
         $favorited = $request->input('favorited', null);
@@ -53,20 +50,21 @@ class ArticleController extends Controller
 
         $articles = $articles->paginate(page:$page, perPage:$perPage);
 
-        $articles->through(function ($article) use ($authenticatedUser) {
-            $article->favorited = $isFavorited = $authenticatedUser->favorites()
-                ->where('article_id', $article->id)
-                ->exists();
-            return $article;
-        });
+        if($request->user()) {
+            $user = $request->user();
+            $user->load('favorites');
+            $articles->through(function ($article) use ($user) {
+                $article->favorited = $isFavorited = $user->favorites()
+                    ->where('article_id', $article->id)
+                    ->exists();
+                return $article;
+            });
+        }
 
         return new ArticlesCollection($articles);
     }
 
     public function feed(Request $request) {
-        $authenticatedUser = auth('api')->user();
-        $authenticatedUser->load('following', 'favorites');
-
         $tag = $request->input('tag', null);
         $author = $request->input('author', null);
         $favorited = $request->input('favorited', null);
@@ -96,15 +94,17 @@ class ArticleController extends Controller
         }
 
         // The key code block that differentiates the feed endpoint from the index endpoint
+        $user = $request->user();
+        $user->load('following', 'favorites');
         {
-            $followingIds = $authenticatedUser->following()->pluck('id');
+            $followingIds = $user->following()->pluck('id');
             $articles = $articles->whereIn('author_id', $followingIds);
         }
 
         $articles = $articles->paginate(page:$page, perPage:$perPage);
 
-        $articles->through(function ($article) use ($authenticatedUser) {
-            $article->favorited = $isFavorited = $authenticatedUser->favorites()
+        $articles->through(function ($article) use ($user) {
+            $article->favorited = $user->favorites()
                 ->where('article_id', $article->id)
                 ->exists();
             return $article;
@@ -116,13 +116,13 @@ class ArticleController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(Article $article)
+    public function show(Request $request, Article $article)
     {
-        $authenticatedUser = auth('api')->user();
-        $article->loadCount('favorited');
+        $user = $request->user();
+        $user->load('favorited');
 
         $isFavorited = false;
-        $isFavorited = $authenticatedUser->favorites()
+        $isFavorited = $user->favorites()
             ->where('article_id', $article->id)
             ->exists();
         
@@ -132,10 +132,10 @@ class ArticleController extends Controller
         return new ArticleResource($article);
     }
 
-
+    // TODO: create standalone tags
     public function store(ArticleStoreRequest $request)
     {
-        $authenticatedUser = auth('api')->user();
+        $user = $request->user();
         DB::beginTransaction();
 
         try {
@@ -147,30 +147,33 @@ class ArticleController extends Controller
                 'slug' => $slug,
             ]);
 
-            $authenticatedUser->articles()->save($article);
-            $authenticatedUser->favorites()->attach($article);
-            $authenticatedUser->refresh();
+            $user->articles()->save($article);
+            $user->favorites()->attach($article);
+            $user->refresh();
 
             // We know this since the article is not immediately favorited
             $article->favorited = false;
+
+            DB::commit();
 
             return new ArticleResource($article);
             
         } catch(\Exception $e) {
             DB::rollBack();
 
-            return response()->json(['error' => 'An error occurred while creating the article.'], 500);
+            return response()->json(['error' => $e->getMessage()], 500);
         }
     }
 
+    // TODO: Update or delete standalone tag relationships
     public function update(ArticleUpdateRequest $request, Article $article)
     {
-        $authenticatedUser = auth('api')->user();
+        $user = $request->user();
         DB::beginTransaction();
 
         try {
             $data = $request->safe();
-            $data = array_filter($data, fn($value) => !is_null($value));
+            $data = array_filter($data->toArray(), fn($value) => !is_null($value));
 
             if(array_key_exists('title', $data)) {
                 $data['slug'] = str_replace(" ", "-", strtolower($data['title']));
@@ -178,9 +181,11 @@ class ArticleController extends Controller
             $article->update($data);
 
             // We know this since the article is not immediately favoited
-            $article->favorited = $authenticatedUser->favorites()
+            $article->favorited = $user->favorites()
                 ->where('article_id', $article->id)
                 ->exists();
+
+            DB::commit();
 
             return new ArticleResource($article);
             

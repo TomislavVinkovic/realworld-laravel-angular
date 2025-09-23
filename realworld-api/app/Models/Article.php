@@ -2,10 +2,10 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
-use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Article extends Model
 {
@@ -23,8 +23,13 @@ class Article extends Model
     public function author(): BelongsTo {
         return $this->belongsTo(User::class, 'author_id');
     }
-    public function tags(): HasMany {
-        return $this->hasMany(Tag::class);
+    public function tags(): BelongsToMany {
+        return $this->belongsToMany(
+            Tag::class,
+            'tags_articles',
+            'article_id',
+            'tag_id'
+        );
     }
     public function favorited(): BelongsToMany {
         return $this->belongsToMany(
@@ -49,6 +54,20 @@ class Article extends Model
     public function getRouteKeyName(): string
     {
         return 'slug';
+    }
+
+    /**
+     * Attribute mutators
+     *
+     * @return array<string, string>
+     */
+    protected function tagList(): Attribute {
+        return Attribute::make(
+            get: fn($value) => $value,
+            set: fn($newTagList) => [
+                'tag_list' => $newTagList
+            ]
+            );
     }
 
 }

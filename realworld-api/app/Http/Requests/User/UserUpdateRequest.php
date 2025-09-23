@@ -3,6 +3,7 @@
 namespace App\Http\Requests\User;
 
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Support\ValidatedInput;
 
 class UserUpdateRequest extends FormRequest
 {
@@ -13,8 +14,6 @@ class UserUpdateRequest extends FormRequest
     {
         return true;
     }
-
-    // TODO: SQUASH DATA
 
     /**
      * Get the validation rules that apply to the request.
@@ -29,5 +28,20 @@ class UserUpdateRequest extends FormRequest
             'user.bio' => ['nullable', 'string'],
             'user.image' => ['nullable', 'image', 'extensions:jpg,jpeg,png,bmp']
         ];
+    }
+
+    public function validated($key = null, $default = null): array {
+        return $this->getSquashedData();
+    }
+
+    public function safe($key = null, $default = null): ValidatedInput {
+        return new ValidatedInput($this->getSquashedData());
+    }
+
+    protected function getSquashedData() {
+        $validatedData = parent::validated();
+        $userData = $validatedData['user'];
+        
+        return $userData;
     }
 }

@@ -3,6 +3,7 @@
 namespace App\Http\Requests\Article;
 
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Support\ValidatedInput;
 
 class ArticleStoreRequest extends FormRequest
 {
@@ -28,5 +29,20 @@ class ArticleStoreRequest extends FormRequest
             'article.body' => ['required', 'string'],
             'article.tagList' => ['nullable', 'array']
         ];
+    }
+
+    public function validated($key = null, $default = null): array {
+        return $this->getSquashedData();
+    }
+    public function safe($key = null, $default = null): ValidatedInput {
+        return new ValidatedInput($this->getSquashedData());
+    }
+
+    // TODO: Move this to a util class, since it is used in nearly every request
+    protected function getSquashedData() {
+        $validatedData = parent::validated();
+        $userData = $validatedData['article'];
+        
+        return $userData;
     }
 }
