@@ -180,19 +180,12 @@ class ArticleController extends Controller
 
         try {
             $data = $request->safe();
-            $data['tag_list'] = $data['tagList'];
             $data = array_filter($data->toArray(), fn($value) => !is_null($value));
 
             if(array_key_exists('title', $data)) {
                 $data['slug'] = str_replace(" ", "-", strtolower($data['title']));
             }
             $article->update($data);
-
-            // Update the related tag models
-            $tagIds = collect($article->tag_list)->map(function($tagName) {
-                return Tag::firstOrCreate(['tag', $tagName])->id;
-            })->all();
-            $article->tags()->sync($tagIds);
 
             // We know this since the article is not immediately favoited
             $article->favorited = $user->favorites()
@@ -206,7 +199,7 @@ class ArticleController extends Controller
         } catch(\Exception $e) {
             DB::rollBack();
 
-            return response()->json(['error' => 'An error occurred while updating the article.'], 500);
+            return response()->json(['error' => $e->getMessage()], 500);
         }
     }
 
