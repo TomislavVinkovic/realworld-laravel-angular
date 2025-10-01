@@ -60,7 +60,7 @@ class User extends Authenticatable implements JWTSubject
             'following',
             'following_id',
             'follower_id'
-        );
+        )->withTimestamps();
     }
     public function following(): BelongsToMany {
         return $this->belongsToMany(
@@ -68,7 +68,7 @@ class User extends Authenticatable implements JWTSubject
             'following',
             'follower_id',
             'following_id'
-        );
+        )->withTimestamps();
     }
     public function favorites(): BelongsToMany {
         return $this->belongsToMany(
@@ -76,7 +76,7 @@ class User extends Authenticatable implements JWTSubject
             'users_articles_favorites',
             'user_id',
             'article_id'
-        );
+        )->withTimestamps();
     }
     public function articles(): HasMany {
         return $this->hasMany(

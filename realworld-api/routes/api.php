@@ -48,7 +48,7 @@ Route::middleware('jwt')->group(function() {
                 Route::get('feed', 'feed');
                 Route::post('', 'store');
                 Route::put('{article}', 'update');
-                Route::delete('{article}', 'update');
+                Route::delete('{article}', 'destroy');
             }
         ); 
 }); 

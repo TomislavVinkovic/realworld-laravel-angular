@@ -16,7 +16,7 @@ class Article extends Model
         'title',
         'description',
         'body',
-        'tags'
+        'tag_list'
     ];
 
     // Relationships
@@ -37,7 +37,7 @@ class Article extends Model
             'users_articles_favorites',
             'article_id',
             'user_id'
-        );
+        )->withTimestamps();
     }
 
     /**
@@ -54,20 +54,6 @@ class Article extends Model
     public function getRouteKeyName(): string
     {
         return 'slug';
-    }
-
-    /**
-     * Attribute mutators
-     *
-     * @return array<string, string>
-     */
-    protected function tagList(): Attribute {
-        return Attribute::make(
-            get: fn($value) => $value,
-            set: fn($newTagList) => [
-                'tag_list' => $newTagList
-            ]
-            );
     }
 
 }

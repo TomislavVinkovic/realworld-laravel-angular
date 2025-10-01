@@ -17,6 +17,6 @@ class Tag extends Model
             'tags_articles',
             'tag_id',
             'article_id'
-        );
+        )->withTimestamps();
     }
 }

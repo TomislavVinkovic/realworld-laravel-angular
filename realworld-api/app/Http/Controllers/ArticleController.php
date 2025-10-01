@@ -145,6 +145,7 @@ class ArticleController extends Controller
             $article = Article::make([
                 ...$data,
                 'slug' => $slug,
+                'tag_list' => $data['tagList']
             ]);
 
             $user->articles()->save($article);
@@ -152,7 +153,7 @@ class ArticleController extends Controller
             $user->refresh();
 
             // Create the related tag models
-            $tagIds = collect($article->tagList)->map(function($tagName) {
+            $tagIds = collect($article->tag_list)->map(function($tagName) {
                 return Tag::firstOrCreate(['tag' => $tagName])->id;
             })->all();
             $article->tags()->sync($tagIds);
@@ -179,6 +180,7 @@ class ArticleController extends Controller
 
         try {
             $data = $request->safe();
+            $data['tag_list'] = $data['tagList'];
             $data = array_filter($data->toArray(), fn($value) => !is_null($value));
 
             if(array_key_exists('title', $data)) {
@@ -187,7 +189,7 @@ class ArticleController extends Controller
             $article->update($data);
 
             // Update the related tag models
-            $tagIds = collect($article->tagList)->map(function($tagName) {
+            $tagIds = collect($article->tag_list)->map(function($tagName) {
                 return Tag::firstOrCreate(['tag', $tagName])->id;
             })->all();
             $article->tags()->sync($tagIds);
@@ -217,6 +219,8 @@ class ArticleController extends Controller
 
         try {
             $article->delete();
+
+            DB::commit();
 
             return response()->json(['message' => 'Article deleted successfully']);
         } catch(\Exception $e) {
