@@ -72,7 +72,16 @@ class AuthController extends Controller
         return response()->json(['message' => 'Successfully logged out']);
     }
 
-    public function show() {
+    public function show(Request $request) {
+        $user = auth('api')->user();
+        $token = $request->header('Authorization');
+
+        if(!is_null($token)) {
+            // TODO: Move this line into a service method
+            $token = str_replace('Bearer ', '', $token);
+            $user->token = $token;
+        }
+
         return new UserResource(auth('api')->user());
     }
 

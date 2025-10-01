@@ -27,7 +27,7 @@ class ArticleResource extends JsonResource
             'updatedAt' => $this->updated_at,
             'favorited' => $this->favorited,
             'favoritesCount' => $this->favorited_count,
-            'author' => $this->author
+            'author' => new ProfileResource($this->whenLoaded('author'))
         ];
     }
 }

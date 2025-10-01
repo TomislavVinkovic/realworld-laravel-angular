@@ -7,6 +7,7 @@ use App\Http\Requests\Article\ArticleUpdateRequest;
 use App\Http\Resources\ArticleResource;
 use App\Http\Resources\ArticlesCollection;
 use App\Models\Article;
+use App\Models\Tag;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -132,7 +133,6 @@ class ArticleController extends Controller
         return new ArticleResource($article);
     }
 
-    // TODO: create standalone tags
     public function store(ArticleStoreRequest $request)
     {
         $user = $request->user();
@@ -151,8 +151,15 @@ class ArticleController extends Controller
             $user->favorites()->attach($article);
             $user->refresh();
 
-            // We know this since the article is not immediately favorited
-            $article->favorited = false;
+            // Create the related tag models
+            $tagIds = collect($article->tagList)->map(function($tagName) {
+                return Tag::firstOrCreate(['tag' => $tagName])->id;
+            })->all();
+            $article->tags()->sync($tagIds);
+            $article->refresh();
+
+            // We know this since the article is immediately favorited on the line above
+            $article->favorited = true;
 
             DB::commit();
 
@@ -165,7 +172,6 @@ class ArticleController extends Controller
         }
     }
 
-    // TODO: Update or delete standalone tag relationships
     public function update(ArticleUpdateRequest $request, Article $article)
     {
         $user = $request->user();
@@ -179,6 +185,12 @@ class ArticleController extends Controller
                 $data['slug'] = str_replace(" ", "-", strtolower($data['title']));
             }
             $article->update($data);
+
+            // Update the related tag models
+            $tagIds = collect($article->tagList)->map(function($tagName) {
+                return Tag::firstOrCreate(['tag', $tagName])->id;
+            })->all();
+            $article->tags()->sync($tagIds);
 
             // We know this since the article is not immediately favoited
             $article->favorited = $user->favorites()
