@@ -27,6 +27,15 @@ class User extends Authenticatable implements JWTSubject
         'bio'
     ];
 
+    protected $with = [
+        'image'
+    ];
+
+    // JSON appends
+    protected $appends = [
+        'is_following'
+    ];
+
     /**
      * The attributes that should be hidden for serialization.
      *
@@ -58,7 +67,7 @@ class User extends Authenticatable implements JWTSubject
         return $this->belongsToMany(
             User::class,
             'following',
-            'following_id',
+            'followed_id',
             'follower_id'
         )->withTimestamps();
     }
@@ -67,7 +76,7 @@ class User extends Authenticatable implements JWTSubject
             User::class,
             'following',
             'follower_id',
-            'following_id'
+            'followed_id'
         )->withTimestamps();
     }
     public function favorites(): BelongsToMany {
@@ -98,5 +107,29 @@ class User extends Authenticatable implements JWTSubject
     public function getRouteKeyName(): string
     {
         return 'name';
+    }
+
+    public function getIsFollowingAttribute(): bool
+    {
+        if (array_key_exists('is_following', $this->attributes)) {
+            return (bool) $this->attributes['is_following'];
+        }
+
+        // 1. If not logged in, they obviously aren't following anyone
+        if (!auth()->check()) {
+            return false;
+        }
+
+        // 2. Optimization: If looking at own profile, return false
+        if (auth()->id() === $this->id) {
+            return false;
+        }
+
+        // 3. Check if the Auth user exists in THIS user's followers list
+        // Note: We use the query builder (followers()) not the collection (followers)
+        // to avoid loading thousands of records into memory.
+        return $this->followers()
+            ->where('follower_id', auth()->id())
+            ->exists();
     }
 }

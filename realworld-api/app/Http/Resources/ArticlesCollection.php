@@ -7,7 +7,7 @@ use Illuminate\Http\Resources\Json\ResourceCollection;
 
 class ArticlesCollection extends ResourceCollection
 {
-
+    public $collects = ArticleResource::class;
     public static $wrap = 'articles';
 
     /**

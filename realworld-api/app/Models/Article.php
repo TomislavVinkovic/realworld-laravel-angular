@@ -6,6 +6,7 @@ use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Article extends Model
 {
@@ -16,7 +17,8 @@ class Article extends Model
         'title',
         'description',
         'body',
-        'tag_list'
+        'tag_list',
+        'author_id'
     ];
 
     // Relationships
@@ -30,6 +32,9 @@ class Article extends Model
             'article_id',
             'tag_id'
         );
+    }
+    public function comments(): HasMany {
+        return $this->hasMany(Comment::class, 'article_id');
     }
     public function favorited(): BelongsToMany {
         return $this->belongsToMany(

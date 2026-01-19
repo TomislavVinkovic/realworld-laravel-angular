@@ -50,12 +50,13 @@ class ArticleController extends Controller
         }
 
         $articles = $articles->paginate(page:$page, perPage:$perPage);
+        $articles->load('author');
 
         if($request->user()) {
             $user = $request->user();
             $user->load('favorites');
             $articles->through(function ($article) use ($user) {
-                $article->favorited = $isFavorited = $user->favorites()
+                $article->favorited = $user->favorites()
                     ->where('article_id', $article->id)
                     ->exists();
                 return $article;
@@ -98,7 +99,7 @@ class ArticleController extends Controller
         $user = $request->user();
         $user->load('following', 'favorites');
         {
-            $followingIds = $user->following()->pluck('id');
+            $followingIds = $user->following()->pluck('followed_id');
             $articles = $articles->whereIn('author_id', $followingIds);
         }
 
@@ -119,16 +120,18 @@ class ArticleController extends Controller
      */
     public function show(Request $request, Article $article)
     {
-        $user = $request->user();
-        $user->load('favorited');
-
         $isFavorited = false;
-        $isFavorited = $user->favorites()
-            ->where('article_id', $article->id)
-            ->exists();
-        
+
+        $user = $request->user();
+        if($user) {
+            $user->load('favorites');
+            $isFavorited = $user->favorites()
+                ->where('article_id', $article->id)
+                ->exists();
+        }
 
         $article->favorited = $isFavorited;
+        $article->load('author');
 
         return new ArticleResource($article);
     }
@@ -187,12 +190,14 @@ class ArticleController extends Controller
             }
             $article->update($data);
 
-            // We know this since the article is not immediately favoited
+            // We know this since the article is not immediately favorited
             $article->favorited = $user->favorites()
                 ->where('article_id', $article->id)
                 ->exists();
 
             DB::commit();
+
+            $article->load('author');
 
             return new ArticleResource($article);
             
@@ -201,6 +206,24 @@ class ArticleController extends Controller
 
             return response()->json(['error' => $e->getMessage()], 500);
         }
+    }
+
+    public function favorite(Request $request, Article $article)
+    {
+        $user = $request->user();
+        $isFavorited = $user->favorites()
+            ->where('article_id', $article->id)
+            ->exists();
+        if($isFavorited) {
+            $user->favorites()->detach($article);
+        }
+        else {
+            $user->favorites()->attach($article);
+        }
+
+        // Since its updated now
+        $article->favorited = !$isFavorited;
+        return new ArticleResource($article);
     }
 
     /**

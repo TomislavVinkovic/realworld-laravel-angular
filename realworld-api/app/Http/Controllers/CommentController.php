@@ -2,64 +2,46 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\Comment\CommentStoreRequest;
+use App\Http\Resources\CommentResource;
+use App\Models\Article;
 use App\Models\Comment;
-use Illuminate\Http\Request;
 
 class CommentController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
-    public function index()
-    {
-        //
+
+    // List all comments for a given article
+    public function list(Article $article) {
+        $comments = Comment::query()
+            ->with(['user' => function ($query) {
+                $query->withExists(['followers as is_following' => function ($q) {  
+                    $q->where('follower_id', auth()->id());
+                }]);
+            }])->get();
+        return CommentResource::collection($comments);
     }
 
-    /**
-     * Show the form for creating a new resource.
-     */
-    public function create()
+    public function store(CommentStoreRequest $request, Article $article)
     {
-        //
-    }
+        $data = $request->safe();
+        $comment = Comment::make([
+            ...$data,
+            'user_id' => $request->user()->id
+        ]);
+        $article->comments()->save($comment);
+        $article->refresh();
 
-    /**
-     * Store a newly created resource in storage.
-     */
-    public function store(Request $request)
-    {
-        //
-    }
+        $comment->load('user');
 
-    /**
-     * Display the specified resource.
-     */
-    public function show(Comment $comment)
-    {
-        //
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(Comment $comment)
-    {
-        //
-    }
-
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(Request $request, Comment $comment)
-    {
-        //
+        return new CommentResource($comment);
     }
 
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(Comment $comment)
+    public function destroy(Article $article, Comment $comment)
     {
-        //
+        $comment->delete();
+        return new CommentResource($comment);
     }
 }

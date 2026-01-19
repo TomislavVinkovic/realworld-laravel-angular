@@ -5,9 +5,9 @@ namespace App\Http\Resources;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
-class ArticleResource extends JsonResource
+class CommentResource extends JsonResource
 {
-    public static $wrap = 'article';
+    public static $wrap = 'comment';
 
     /**
      * Transform the resource into an array.
@@ -17,16 +17,11 @@ class ArticleResource extends JsonResource
     public function toArray(Request $request): array
     {
         return [
-            'slug' => $this->slug,
-            'title' => $this->title,
-            'description' => $this->title,
+            'id' => $this->id,
             'body' => $this->body,
-            'tagList' => collect($this->tag_list)->sort()->values(),
             'createdAt' => $this->created_at,
             'updatedAt' => $this->updated_at,
-            'favorited' => $this->favorited,
-            'favoritesCount' => $this->favorited_count,
-            'author' => new ProfileResource($this->whenLoaded('author'))
+            'author' => new CommentUserResource($this->whenLoaded('user'))
         ];
     }
 }

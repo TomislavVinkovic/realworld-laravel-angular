@@ -16,7 +16,7 @@ class ProfileController extends Controller
         $isFollowing = false;
 
         $isFollowing = $authenticatedUser->following()
-            ->where('following_id', $user->id)
+            ->where('follower_id', $user->id)
             ->exists();
         
         $user->following = $isFollowing;
@@ -30,7 +30,7 @@ class ProfileController extends Controller
 
 
         $isFollowing = $authenticatedUser->following()
-            ->where('following_id', $user->id)
+            ->where('follower_id', $user->id)
             ->exists();
         
         if($isFollowing) {

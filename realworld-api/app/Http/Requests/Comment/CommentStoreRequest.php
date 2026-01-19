@@ -1,11 +1,11 @@
 <?php
 
-namespace App\Http\Requests\Article;
+namespace App\Http\Requests\Comment;
 
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Support\ValidatedInput;
 
-class ArticleStoreRequest extends FormRequest
+class CommentStoreRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -23,11 +23,8 @@ class ArticleStoreRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'article' => ['required', 'array:title,description,body,tagList'],
-            'article.title' => ['required', 'string'],
-            'article.description' => ['required', 'string'],
-            'article.body' => ['required', 'string'],
-            'article.tagList' => ['nullable', 'array']
+            'comment' => ['required', 'array:body'],
+            'comment.body' => 'required|string'
         ];
     }
 
@@ -41,7 +38,7 @@ class ArticleStoreRequest extends FormRequest
     // TODO: Move this to a util class, since it is used in nearly every request
     protected function getSquashedData() {
         $validatedData = parent::validated();
-        $articleData = $validatedData['article'];
+        $articleData = $validatedData['comment'];
         
         return $articleData;
     }
