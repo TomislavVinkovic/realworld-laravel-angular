@@ -24,7 +24,7 @@ class ArticleResource extends JsonResource
             'tagList' => collect($this->tag_list)->sort()->values(),
             'createdAt' => $this->created_at,
             'updatedAt' => $this->updated_at,
-            'favorited' => $this->favorited,
+            'favorited' => $this->is_favorited,
             'favoritesCount' => $this->favorited_count,
             'author' => new ProfileResource($this->whenLoaded('author'))
         ];

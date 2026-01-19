@@ -21,6 +21,10 @@ class Article extends Model
         'author_id'
     ];
 
+    protected $appends = [
+        'is_favorited'
+    ];
+
     // Relationships
     public function author(): BelongsTo {
         return $this->belongsTo(User::class, 'author_id');
@@ -59,6 +63,24 @@ class Article extends Model
     public function getRouteKeyName(): string
     {
         return 'slug';
+    }
+
+    public function getIsFavoritedAttribute(): bool
+    {
+        // 1. Optimization Check: Did we pre-load this in the controller?
+        if (array_key_exists('is_favorited', $this->attributes)) {
+            return (bool) $this->attributes['is_favorited'];
+        }
+
+        // 2. Auth Check
+        if (!auth('api')->check()) {
+            return false;
+        }
+
+        // 3. Database Check (Fallback)
+        return $this->favorited()
+            ->where('user_id', auth('api')->id())
+            ->exists();
     }
 
 }

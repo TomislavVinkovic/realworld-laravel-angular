@@ -23,14 +23,24 @@ Route::get('profiles/{user}', [ProfileController::class, 'show']);
 
 Route::controller(ArticleController::class)
     ->prefix('articles')
+    ->group(
+        function() {
+           Route::get('', 'index'); 
+        }
+    );
+
+
+Route::controller(ArticleController::class)
+    ->prefix('articles')
     ->middleware('auth:api')
     ->group(
         function() {
-            Route::get('feed', 'feed');
             Route::post('', 'store');
+            Route::get('feed', 'feed');
             Route::put('{article}', 'update');
             Route::delete('{article}', 'destroy');
             Route::post('{article}/favorite', 'favorite');
+            Route::delete('{article}/favorite', 'unfavorite');
         }
     );
 
@@ -54,7 +64,7 @@ Route::controller(CommentController::class)
     );
 
 // Comments controller and routes
-Route::controller(CommentController::class)
+Route::controller(ArticleController::class)
     ->prefix('articles')
     ->group(
         function() {

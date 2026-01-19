@@ -31,7 +31,12 @@ class ArticleController extends Controller
         $page = intdiv($offset, $perPage);
 
         $articles = Article::query()
-            ->orderBy('created_at', 'desc');
+            ->with(['author'])
+            ->withCount('favorited')
+            ->withExists(['favorited as is_favorited' => function ($query) {
+                $query->where('user_id', auth('api')->id());
+            }])
+            ->latest();
 
         if(!is_null($tag)) {
             $articles = $articles->whereHas('tags', function(Builder $query) use ($tag) {
@@ -50,18 +55,6 @@ class ArticleController extends Controller
         }
 
         $articles = $articles->paginate(page:$page, perPage:$perPage);
-        $articles->load('author');
-
-        if($request->user()) {
-            $user = $request->user();
-            $user->load('favorites');
-            $articles->through(function ($article) use ($user) {
-                $article->favorited = $user->favorites()
-                    ->where('article_id', $article->id)
-                    ->exists();
-                return $article;
-            });
-        }
 
         return new ArticlesCollection($articles);
     }
@@ -77,6 +70,7 @@ class ArticleController extends Controller
         $page = intdiv($offset, $perPage);
 
         $articles = Article::query()
+            ->withCount('favorited')
             ->orderBy('created_at', 'desc');
 
         if(!is_null($tag)) {
@@ -132,6 +126,7 @@ class ArticleController extends Controller
 
         $article->favorited = $isFavorited;
         $article->load('author');
+        $article->loadCount('favorited');
 
         return new ArticleResource($article);
     }
@@ -167,6 +162,9 @@ class ArticleController extends Controller
 
             DB::commit();
 
+            $article->load('author');
+            $article->loadCount('favorited');
+
             return new ArticleResource($article);
             
         } catch(\Exception $e) {
@@ -198,6 +196,7 @@ class ArticleController extends Controller
             DB::commit();
 
             $article->load('author');
+            $article->loadCount('favorited');
 
             return new ArticleResource($article);
             
@@ -210,19 +209,18 @@ class ArticleController extends Controller
 
     public function favorite(Request $request, Article $article)
     {
-        $user = $request->user();
-        $isFavorited = $user->favorites()
-            ->where('article_id', $article->id)
-            ->exists();
-        if($isFavorited) {
-            $user->favorites()->detach($article);
-        }
-        else {
-            $user->favorites()->attach($article);
-        }
+        $request->user()->favorites()->syncWithoutDetaching([$article->id]);
+        $article->load('author');
+        $article->loadCount('favorited');
+        
+        return new ArticleResource($article);
+    }
 
-        // Since its updated now
-        $article->favorited = !$isFavorited;
+    public function unfavorite(Request $request, Article $article) {
+        $request->user()->favorites()->detach($article);
+        $article->load('author');
+        $article->loadCount('favorited');
+        
         return new ArticleResource($article);
     }
 
