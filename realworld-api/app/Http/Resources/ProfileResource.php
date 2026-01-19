@@ -15,7 +15,7 @@ class ProfileResource extends JsonResource
             'username' => $this->name,
             'bio' => $this->bio,
             'image' => $this->image?->publicUrl ?? '',
-            'following' => $this->following ?? false
+            'following' => $this->is_following
         ];
     }
 }

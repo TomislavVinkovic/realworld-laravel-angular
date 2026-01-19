@@ -4,6 +4,7 @@ use App\Http\Controllers\ArticleController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\CommentController;
 use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\TagController;
 use Illuminate\Support\Facades\Route;
 
 Route::middleware('anonymous')->group(function() {
@@ -61,7 +62,7 @@ Route::controller(CommentController::class)
         }
     );
 
-Route::middleware('jwt')->group(function() {
+Route::middleware('auth:api')->group(function() {
     Route::controller(AuthController::class)
         ->prefix('user')
         ->group(
@@ -72,5 +73,15 @@ Route::middleware('jwt')->group(function() {
             }
         );
 
-    Route::get('profiles/{user}/follow', [ProfileController::class, 'follow']);
-}); 
+    Route::post('profiles/{user}/follow', [ProfileController::class, 'follow']);
+    Route::delete('profiles/{user}/follow', [ProfileController::class, 'unfollow']);
+});
+
+// Tag routes
+Route::controller(TagController::class)
+    ->prefix('tags')
+    ->group(
+        function() {
+            Route::get('', 'index');
+        }
+    );

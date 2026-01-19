@@ -19,32 +19,23 @@ class ProfileController extends Controller
             ->where('follower_id', $user->id)
             ->exists();
         
-        $user->following = $isFollowing;
-
         return new ProfileResource($user);
     }
 
     public function follow(User $user) {
-        $authenticatedUser = auth('api')->user();
-        $isFollowing = false;
+        if (auth('api')->user()->id == $user->id) {
+        return response()->json([
+            'errors' => [
+                'message' => ['You cannot follow yourself.']
+            ]
+        ], 422);
+    }
+        auth('api')->user()->following()->attach($user->id);
+        return new ProfileResource($user->refresh());
+    }
 
-
-        $isFollowing = $authenticatedUser->following()
-            ->where('follower_id', $user->id)
-            ->exists();
-        
-        if($isFollowing) {
-            $authenticatedUser->following()->detach($user->id);
-            $isFollowing = false;
-        }
-        else {
-            $authenticatedUser->following()->attach($user->id);
-            $isFollowing = true;
-        }
-        $authenticatedUser->save();
-
-        $user->following = $isFollowing;
-
-        return new ProfileResource($user);
+    public function unfollow(User $user) {
+        auth('api')->user()->following()->detach($user->id);
+        return new ProfileResource($user->refresh());
     }
 }
