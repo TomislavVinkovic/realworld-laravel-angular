@@ -23,7 +23,7 @@ export class AuthService {
     }
   }
 
-  login(credentials: LoginRequest) : Observable<UserResponse> {
+  login(credentials: LoginCredentials) : Observable<UserResponse> {
     return this.api.post<UserResponse>('/users/login', {user: credentials})
       .pipe(
         tap(
@@ -31,7 +31,7 @@ export class AuthService {
         )
       );
   }
-  register(credentials: RegisterRequest) : Observable<UserResponse> {
+  register(credentials: RegisterCredentials) : Observable<UserResponse> {
     return this.api.post<UserResponse>('/users/', {user: credentials})
       .pipe(
         tap(
@@ -40,7 +40,11 @@ export class AuthService {
       );
   }
   logout() : Observable<void> {
-    return this.api.get<void>('/user/logout');
+    return this.api.get<void>('/user/logout').pipe(
+      tap(
+        _ => this.purgeAuth()
+      )
+    );
   }
   refreshUser(): void {
     this.api.get<UserResponse>('/user').subscribe({
@@ -60,21 +64,15 @@ export class AuthService {
   }
 }
 
-interface LoginRequest {
-  user: {
+interface LoginCredentials {
     email: string, 
     password: string
-  }
 }
-interface RegisterRequest {
-  user: {
+interface RegisterCredentials {
     username: string, 
     email: string, 
     password: string
-  }
-  
 }
-
 interface UserResponse {
   user: User;
 }
