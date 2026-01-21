@@ -1,1 +1,64 @@
-<p>home works!</p>
+<div class="home-page">
+
+  <div class="container mx-auto px-4 page">
+    <div class="flex flex-wrap -mx-4">
+      
+      <div class="w-full md:w-3/4 px-4">
+        
+        <div class="mb-6 border-b border-gray-200">
+          <ul class="flex list-none pl-0 mb-0">
+            <li class="nav-item">
+              <button 
+                class="block py-2 px-4 text-gray-400 hover:text-gray-600 focus:outline-none"
+                [class.text-emerald-500]="true" 
+                [class.border-b-2]="true" 
+                [class.border-emerald-500]="true">
+                Global Feed
+              </button>
+            </li>
+          </ul>
+        </div>
+
+        @if (isLoading()) {
+          <div class="p-4 text-gray-500">Loading articles...</div>
+        } @else {
+          @for (article of articles(); track article.slug) {
+            <app-article-preview 
+              [article]="article" 
+              (toggleFavorite)="onToggleFavorite($event)" 
+            />
+          } @empty {
+            <div class="p-4 text-gray-500">No articles are here... yet.</div>
+          }
+
+          <nav class="mt-4">
+            <ul class="flex flex-wrap pl-0 list-none rounded gap-1">
+              @for (page of totalPages(); track page) {
+                <li>
+                  <button 
+                    class="relative block py-2 px-3 leading-tight border border-gray-300 hover:bg-gray-100 hover:underline transition-colors text-sm"
+                    [class.bg-emerald-500]="currentPage() === page"
+                    [class.text-white]="currentPage() === page"
+                    [class.text-emerald-500]="currentPage() !== page"
+                    [class.border-emerald-500]="currentPage() === page"
+                    (click)="setPage(page)">
+                    {{ page }}
+                  </button>
+                </li>
+              }
+            </ul>
+          </nav>
+        }
+      </div>
+
+      <div class="w-full md:w-1/4 px-4">
+        <div class="bg-gray-100 p-3 rounded">
+            <p class="mb-2 text-sm font-medium text-gray-700">Popular Tags</p>
+            <div class="flex flex-wrap gap-1">
+              <app-popular-tags />
+            </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
