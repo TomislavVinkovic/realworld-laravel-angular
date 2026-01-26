@@ -10,9 +10,6 @@ import { DatePipe, NgOptimizedImage } from '@angular/common';
   styleUrl: './article-preview.css',
 })
 export class ArticlePreviewComponent {
-  // Use input.required to ensure type safety
   readonly article = input.required<Article>();
-  
-  // Output event for the parent to handle the API call
-  readonly toggleFavorite = output<string>();
+  readonly toggleFavorite = output<Article>();
 }

@@ -39,7 +39,7 @@
       [class.hover:bg-emerald-600]="article().favorited"
       [class.hover:text-white]="!article().favorited"
       [class.hover:bg-emerald-500]="!article().favorited"
-      (click)="toggleFavorite.emit(article().slug)"
+      (click)="toggleFavorite.emit(article())"
       [attr.aria-label]="'Toggle favorite (' + article().favoritesCount + ')'">
       <i class="ion-heart"></i> 
       <span>{{ article().favoritesCount }}</span>
@@ -55,7 +55,17 @@
     </p>
     
     <div class="flex justify-between items-center mt-4">
-      <span class="text-xs text-gray-300 font-light group-hover:text-gray-400">Read more...</span>
+      <a
+        [routerLink]=""
+        class="
+          text-xs 
+          text-gray-300 
+          font-light 
+          group-hover:text-gray-400
+        "
+      >
+        Read more...
+      </a>
 
       <ul class="flex gap-1 flex-wrap justify-end">
         @for (tag of article().tagList; track tag) {

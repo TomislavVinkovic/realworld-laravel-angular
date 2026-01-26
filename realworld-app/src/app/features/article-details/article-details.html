@@ -1,0 +1,67 @@
+@if (isLoading()) {
+  <div class="min-h-screen flex items-center justify-center">
+    <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-emerald-500"></div>
+  </div>
+} @if (article) {
+  <div class="article-page">
+    <div class="bg-gray-900 text-white py-12 shadow-inner mb-8">
+      <div class="container mx-auto px-4 max-w-4xl">
+        
+        <h1 class="text-4xl md:text-5xl font-bold mb-8 font-titillium tracking-tight drop-shadow-md">
+          {{ article!.title }}
+        </h1>
+
+        <div class="flex items-center gap-3">
+          <a [routerLink]="['/profile', article!.author.username]">
+            <img 
+              [src]="article!.author.image || 'assets/images/avatar.png'" 
+              class="h-8 w-8 rounded-full object-cover bg-gray-700" 
+              [alt]="article!.author.username"
+            >
+          </a>
+          
+          <div class="flex flex-col text-sm leading-4">
+            <a 
+              [routerLink]="['/profile', article!.author.username]" 
+              class="font-medium hover:text-emerald-400 hover:underline transition-colors text-white"
+            >
+              {{ article!.author.username }}
+            </a>
+            <span class="text-gray-400 font-light">
+              {{ article!.createdAt | date:'longDate' }}
+            </span>
+          </div>
+
+          </div>
+
+      </div>
+    </div>
+
+    <div class="container mx-auto px-4 max-w-4xl">
+      
+      <div class="text-lg text-gray-800 leading-relaxed font-source-serif mb-12 whitespace-pre-wrap border-b border-gray-200 pb-12">
+        {{ article!.body }}
+      </div>
+
+      @if (article!.tagList.length > 0) {
+        <ul class="flex flex-wrap gap-2 mb-12">
+          @for (tag of article!.tagList; track tag) {
+            <li class="border border-gray-300 text-gray-500 text-sm px-3 py-1 rounded-full cursor-default hover:border-gray-400 transition-colors">
+              {{ tag }}
+            </li>
+          }
+        </ul>
+      }
+
+      <div class="bg-gray-50 py-12 -mx-4 px-4 text-center rounded border border-gray-100">
+        <p class="text-gray-600">
+          <a routerLink="/login" class="text-emerald-600 hover:underline">Sign in</a> 
+          or 
+          <a routerLink="/register" class="text-emerald-600 hover:underline">sign up</a> 
+          to add comments on this article.
+        </p>
+      </div>
+
+    </div>
+  </div>
+}

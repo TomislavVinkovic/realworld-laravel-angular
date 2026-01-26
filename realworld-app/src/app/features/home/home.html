@@ -25,7 +25,7 @@
           @for (article of articles(); track article.slug) {
             <app-article-preview 
               [article]="article" 
-              (toggleFavorite)="onToggleFavorite($event)" 
+              (toggleFavorite)="toggleFavorite($event)" 
             />
           } @empty {
             <div class="p-4 text-gray-500">No articles are here... yet.</div>
