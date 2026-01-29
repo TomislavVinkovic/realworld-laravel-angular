@@ -74,15 +74,13 @@ class AuthController extends Controller
 
     public function show(Request $request) {
         $user = auth('api')->user();
-        $token = $request->header('Authorization');
+        $token = JWTAuth::getToken();
 
-        if(!is_null($token)) {
-            // TODO: Move this line into a service method
-            $token = str_replace('Bearer ', '', $token);
-            $user->token = $token;
+        if ($token) {
+            $user->token = (string) $token;
         }
 
-        return new UserResource(auth('api')->user());
+        return new UserResource($user);
     }
 
     public function update(UserUpdateRequest $request) {

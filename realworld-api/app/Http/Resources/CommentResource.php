@@ -7,8 +7,6 @@ use Illuminate\Http\Resources\Json\JsonResource;
 
 class CommentResource extends JsonResource
 {
-    public static $wrap = 'comment';
-
     /**
      * Transform the resource into an array.
      *
@@ -21,7 +19,7 @@ class CommentResource extends JsonResource
             'body' => $this->body,
             'createdAt' => $this->created_at,
             'updatedAt' => $this->updated_at,
-            'author' => new CommentUserResource($this->whenLoaded('user'))
+            'author' => new ProfileResource($this->whenLoaded('user'))
         ];
     }
 }

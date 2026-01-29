@@ -37,10 +37,10 @@ Route::controller(ArticleController::class)
         function() {
             Route::post('', 'store');
             Route::get('feed', 'feed');
+            Route::post('{article}/favorite', 'favorite');
+            Route::delete('{article}/unfavorite', 'unfavorite');
             Route::put('{article}', 'update');
             Route::delete('{article}', 'destroy');
-            Route::post('{article}/favorite', 'favorite');
-            Route::delete('{article}/favorite', 'unfavorite');
         }
     );
 

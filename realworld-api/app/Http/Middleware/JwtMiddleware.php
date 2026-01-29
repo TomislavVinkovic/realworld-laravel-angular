@@ -28,7 +28,7 @@ class JwtMiddleware
                     $refreshedToken = JWTAuth::refresh(JWTAuth::getToken());
                     JWTAuth::setToken($refreshedToken)->authenticate();
                     $response = $next($request);
-                    $response->headers->set('Authorization', 'Bearer ' . $refreshedToken);
+                    $response->headers->set('Authorization', 'Token ' . $refreshedToken);
                     
                     return $response;
                 } catch (JWTException $refreshException) {

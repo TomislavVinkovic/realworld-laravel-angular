@@ -224,13 +224,9 @@ class ArticleController extends Controller
         return new ArticleResource($article);
     }
 
-    /**
-     * Remove the specified resource from storage.
-     */
     public function destroy(Article $article)
     {
         DB::beginTransaction();
-
         try {
             $article->delete();
 
