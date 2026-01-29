@@ -6,6 +6,7 @@ use App\Http\Requests\Article\ArticleStoreRequest;
 use App\Http\Requests\Article\ArticleUpdateRequest;
 use App\Http\Resources\ArticleResource;
 use App\Http\Resources\ArticlesCollection;
+use App\Http\Resources\EditArticleResource;
 use App\Models\Article;
 use App\Models\Tag;
 use Illuminate\Database\Eloquent\Builder;
@@ -131,6 +132,14 @@ class ArticleController extends Controller
         return new ArticleResource($article);
     }
 
+    public function edit(Request $request, Article $article)
+    {
+        if($article->author_id != $request->user()->id) {
+            return response($status=403);
+        }
+        return new EditArticleResource($article);
+    }
+
     public function store(ArticleStoreRequest $request)
     {
         $user = $request->user();
@@ -186,7 +195,17 @@ class ArticleController extends Controller
             if(array_key_exists('title', $data)) {
                 $data['slug'] = str_replace(" ", "-", strtolower($data['title']));
             }
+            if (array_key_exists('tagList', $data)) {
+                $data['tag_list'] = $data['tagList']; 
+                unset($data['tagList']);
+            }
             $article->update($data);
+            $tagIds = collect($article->tag_list)->map(function($tagName) {
+                return Tag::firstOrCreate(['tag' => $tagName])->id;
+            })->all();
+            $article->tags()->sync($tagIds);
+            $article->refresh();
+
 
             // We know this since the article is not immediately favorited
             $article->favorited = $user->favorites()

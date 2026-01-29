@@ -37,6 +37,7 @@ Route::controller(ArticleController::class)
         function() {
             Route::post('', 'store');
             Route::get('feed', 'feed');
+            Route::get('{article}/edit', 'edit');
             Route::post('{article}/favorite', 'favorite');
             Route::delete('{article}/unfavorite', 'unfavorite');
             Route::put('{article}', 'update');

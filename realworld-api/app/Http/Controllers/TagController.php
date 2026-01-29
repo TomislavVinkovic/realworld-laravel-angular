@@ -14,7 +14,7 @@ class TagController extends Controller
     {
         return response()->json(
             [
-                'tags' => Tag::all()->pluck('tag')
+                'tags' => Tag::limit(5)->pluck('tag')
             ]
             
         );
