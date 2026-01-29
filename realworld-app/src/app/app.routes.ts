@@ -25,4 +25,14 @@ export const routes: Routes = [
     loadComponent: () => import('./features/article-details/article-details').then(m => m.ArticleDetails),
     title: 'Article Details'
   },
+  {
+    path: 'editor', 
+    loadComponent: () => import('./features/create-edit-article/create-edit-article').then(m => m.CreateEditArticle),
+    title: 'Create article'
+  },
+  {
+    path: 'editor/:slug', 
+    loadComponent: () => import('./features/create-edit-article/create-edit-article').then(m => m.CreateEditArticle),
+    title: 'Edit article'
+  },
 ];

@@ -12,27 +12,43 @@
         </h1>
 
         <div class="flex items-center gap-3">
-          <a [routerLink]="['/profile', article!.author.username]">
+          <a [routerLink]="['/profile', article!.author!.username]">
             <img 
-              [src]="article!.author.image || 'assets/images/avatar.png'" 
+              [src]="article!.author!.image || 'assets/images/avatar.png'" 
               class="h-8 w-8 rounded-full object-cover bg-gray-700" 
-              [alt]="article!.author.username"
+              [alt]="article!.author!.username"
             >
           </a>
           
           <div class="flex flex-col text-sm leading-4">
             <a 
-              [routerLink]="['/profile', article!.author.username]" 
+              [routerLink]="['/profile', article!.author!.username]" 
               class="font-medium hover:text-emerald-400 hover:underline transition-colors text-white"
             >
-              {{ article!.author.username }}
+              {{ article!.author!.username }}
             </a>
             <span class="text-gray-400 font-light">
               {{ article!.createdAt | date:'longDate' }}
             </span>
           </div>
 
-          </div>
+          @if(currentUser()?.username == article.author?.username) {
+            <div class="flex gap-2">
+              <button 
+                (click)="editArticle()"
+                class="text-sm px-2 py-1 border border-gray-400 text-gray-400 rounded hover:bg-gray-700 hover:text-white transition-colors flex items-center gap-1">
+                <i class="ion-edit"></i> Edit Article
+              </button>
+
+              <button 
+                (click)="deleteArticle()"
+                class="text-sm px-2 py-1 border border-red-500 text-red-500 rounded hover:bg-red-600 hover:text-white transition-colors flex items-center gap-1">
+                <i class="ion-trash-a"></i> Delete Article
+              </button>
+            </div>
+          }
+          
+        </div>
 
       </div>
     </div>

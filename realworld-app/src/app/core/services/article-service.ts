@@ -43,9 +43,42 @@ export class ArticleService {
         map(article => article.article)
       );
   }
+
+  // fetch the article for editing
+  editArticle(slug: string) {
+    return this.api.get<EditArticleResponse>(`/articles/${slug}/edit`)
+      .pipe(
+        map(article => article.article)
+      );
+  }
+  createArticle(article: Article) {
+    return this.api.post<CreateArticleResponse>(`/articles`, {article: article})
+      .pipe(
+        map(article => article.article)
+      );
+  }
+  updateArticle(slug: string, article: Article) {
+    return this.api.put<UpdateArticleResponse>(`/articles/${slug}`, {article: article})
+      .pipe(
+        map(article => article.article)
+      );
+  }
+  deleteArticle(slug: string) {
+    return this.api.delete(`/articles/${slug}`);
+  }
 }
 
+
 interface ArticleResponse {
+  article: Article
+}
+interface EditArticleResponse {
+  article: Article
+}
+interface CreateArticleResponse {
+  article: Article
+}
+interface UpdateArticleResponse {
   article: Article
 }
 

@@ -57,7 +57,7 @@ export class Home implements OnInit {
   toggleFavorite(article: Article) {
     // 1. Calculate the new state immediately
     const isFavorited = article.favorited;
-    const newCount = isFavorited ? article.favoritesCount - 1 : article.favoritesCount + 1;
+    const newCount = isFavorited ? article.favoritesCount! - 1 : article.favoritesCount! + 1;
 
     // 2. Optimistically update the Signal (Update the UI instantly)
     // We map over the array, find the matching article, and change only that one
@@ -71,8 +71,8 @@ export class Home implements OnInit {
 
     // 3. Send the API request in the background
     const request$ = isFavorited
-      ? this.articleService.unfavorite(article.slug)
-      : this.articleService.favorite(article.slug);
+      ? this.articleService.unfavorite(article.slug!)
+      : this.articleService.favorite(article.slug!);
 
     request$.subscribe({
       error: (err) => {
