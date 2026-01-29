@@ -1,0 +1,53 @@
+<div class="space-y-4 max-w-3xl mx-auto mt-8">
+  
+  @for (comment of comments(); track comment.id) {
+    <div class="border border-gray-200 rounded-lg overflow-hidden bg-white shadow-sm hover:shadow-md transition-shadow">
+      
+      <div class="p-6">
+        <p class="text-gray-800 leading-relaxed font-source-serif">
+          {{ comment.body }}
+        </p>
+      </div>
+
+      <div class="bg-gray-50 px-6 py-3 border-t border-gray-200 flex items-center justify-between">
+        
+        <div class="flex items-center gap-2">
+          <a [routerLink]="['/profile', comment.author.username]" class="flex-shrink-0">
+            <img 
+              [src]="comment.author.image || 'assets/images/avatar.png'" 
+              class="h-5 w-5 rounded-full object-cover" 
+              [alt]="comment.author.username"
+            >
+          </a>
+
+          <a 
+            [routerLink]="['/profile', comment.author.username]" 
+            class="text-sm font-medium text-emerald-600 hover:text-emerald-700 hover:underline"
+          >
+            {{ comment.author.username }}
+          </a>
+
+          <span class="text-xs text-gray-400">
+            {{ comment.createdAt | date:'mediumDate' }}
+          </span>
+        </div>
+
+        </div>
+    </div>
+  } @empty {
+    <div class="text-center py-8 text-gray-500">
+      <p>No comments yet...</p>
+    </div>
+  }
+
+</div>
+@if(!user()) {
+    <div class="bg-gray-50 py-12 -mx-4 px-4 text-center rounded border border-gray-100">
+        <p class="text-gray-600">
+            <a routerLink="/login" class="text-emerald-600 hover:underline">Sign in</a> 
+            or 
+            <a routerLink="/register" class="text-emerald-600 hover:underline">sign up</a> 
+            to add comments on this article.
+        </p>
+    </div>
+}
