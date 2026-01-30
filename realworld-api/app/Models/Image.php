@@ -16,7 +16,7 @@ class Image extends Model
 
     protected function publicUrl(): Attribute {
         return Attribute::make(
-            get: fn ($_, $attributes) => Storage::url($attributes['src'])
+            get: fn ($_, $attributes) => asset(Storage::url($attributes['src']))
         );
     }
 }

@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Http\Requests\Auth\LoginRequest;
 use App\Http\Requests\Auth\RegisterRequest;
 use App\Http\Requests\User\UserUpdateRequest;
+use App\Http\Resources\EditUserResource;
 use App\Http\Resources\UserResource;
 use App\Models\Image;
 use App\Models\User;
@@ -83,6 +84,17 @@ class AuthController extends Controller
         return new UserResource($user);
     }
 
+    public function edit() {
+        $user = auth('api')->user();
+        $token = JWTAuth::getToken();
+
+        if ($token) {
+            $user->token = (string) $token;
+        }
+
+        return new EditUserResource($user);
+    }
+
     public function update(UserUpdateRequest $request) {
         $user = auth('api')->user();
         DB::beginTransaction();
@@ -95,14 +107,14 @@ class AuthController extends Controller
                 $user->update($userData);
             }
             
-            if($request->hasFile('image')) {
+            if($request->hasFile('user.image')) {
                 if($user->image) {
                     Storage::disk('public')->delete($user->image->src);
                     $user->image->delete();
                 }
 
                 $newImagePath = Storage::disk('public')
-                    ->putFile('avatars', $request->file('image'));
+                    ->putFile('avatars', $request->file('user.image'));
                 $newImage = Image::create([
                     'src' => $newImagePath
                 ]);
@@ -119,6 +131,5 @@ class AuthController extends Controller
         }
         
         return new UserResource($user);
-
     }
 }

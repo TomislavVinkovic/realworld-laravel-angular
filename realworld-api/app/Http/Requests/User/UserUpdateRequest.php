@@ -4,6 +4,7 @@ namespace App\Http\Requests\User;
 
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Support\ValidatedInput;
+use Illuminate\Validation\Rule;
 
 class UserUpdateRequest extends FormRequest
 {
@@ -22,9 +23,14 @@ class UserUpdateRequest extends FormRequest
      */
     public function rules(): array
     {
+        $userId = $this->user()->id;
         return [
             'user' => ['required', 'array:email,bio,image'],
-            'user.email' => ['nullable', 'email', 'unique:users,email'],
+            'user.email' => [
+                'nullable', 
+                'email',
+                Rule::unique('users', 'email')->ignore($userId)
+            ],
             'user.bio' => ['nullable', 'string'],
             'user.image' => ['nullable', 'image', 'extensions:jpg,jpeg,png,bmp']
         ];

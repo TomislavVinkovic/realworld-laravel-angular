@@ -79,8 +79,9 @@ Route::middleware('auth:api')->group(function() {
         ->group(
             function() {
                 Route::get('', 'show');
+                Route::get('edit', 'edit');
                 Route::get('logout', 'logout');
-                Route::put('', 'update');
+                Route::post('', 'update');
             }
         );
 
