@@ -39,7 +39,7 @@
       [class.hover:bg-emerald-600]="article().favorited"
       [class.hover:text-white]="!article().favorited"
       [class.hover:bg-emerald-500]="!article().favorited"
-      (click)="toggleFavorite.emit(article())"
+      (click)="isAuthenticated() ? toggleFavorite.emit(article()) : rerouteToLogin()"
       [attr.aria-label]="'Toggle favorite (' + article().favoritesCount + ')'">
       <i class="ion-heart"></i> 
       <span>{{ article().favoritesCount }}</span>

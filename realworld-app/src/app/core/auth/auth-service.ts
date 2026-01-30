@@ -13,7 +13,7 @@ export class AuthService {
 
   readonly currentUser = signal<User | null>(null);
 
-  readonly isAuthenticated = computed(() => !!this.currentUser);
+  readonly isAuthenticated = computed(() => !!this.currentUser());
 
   constructor() {
     const token = localStorage.getItem('jwtToken');

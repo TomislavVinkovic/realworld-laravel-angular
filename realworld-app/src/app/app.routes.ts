@@ -42,7 +42,7 @@ export const routes: Routes = [
   },
   {
     path: 'profile/:username', 
-    loadComponent: () => import('./features/profile/profile').then(m => m.Profile),
+    loadComponent: () => import('./features/profile/profile-page').then(m => m.ProfilePage),
     title: 'Profile'
   },
 ];
