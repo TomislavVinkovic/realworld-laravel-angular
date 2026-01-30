@@ -1,4 +1,4 @@
-import { Component, inject, OnInit } from '@angular/core';
+import { Component, inject, OnInit, output } from '@angular/core';
 import { TagService } from '../../../core/services/tag-service';
 
 @Component({
@@ -9,6 +9,7 @@ import { TagService } from '../../../core/services/tag-service';
 })
 export class PopularTags implements OnInit{
   private readonly tagService = inject(TagService);
+  readonly tagSelected = output<string>();
   readonly tags = this.tagService.tags;
   
   ngOnInit(): void {

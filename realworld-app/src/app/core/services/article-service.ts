@@ -29,6 +29,22 @@ export class ArticleService {
     return this.api.get<ArticlesResponse>('/articles', params);
   }
 
+  getFeed(config: ArticleListConfig['filters'] = {}) {
+    let params = new HttpParams();
+    
+    const limit = config.limit ?? 10;
+    const offset = config.offset ?? 0;
+
+    params = params.set('limit', limit);
+    params = params.set('offset', offset);
+
+    if (config.tag) params = params.set('tag', config.tag);
+    if (config.author) params = params.set('author', config.author);
+    if (config.favorited) params = params.set('favorited', config.favorited);
+
+    return this.api.get<ArticlesResponse>('/articles/feed', params);
+  }
+
   favorite(slug: string) {
     return this.api.post<ArticleResponse>(`/articles/${slug}/favorite`);
   }

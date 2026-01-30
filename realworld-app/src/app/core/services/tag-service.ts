@@ -8,7 +8,7 @@ import { finalize, tap } from 'rxjs';
 export class TagService {
   private readonly api = inject(ApiService);
 
-  readonly tags = signal<String[]>([]);
+  readonly tags = signal<string[]>([]);
   readonly isLoading = signal<boolean>(false);
 
   getTags() {
