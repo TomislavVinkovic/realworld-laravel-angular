@@ -35,4 +35,14 @@ export const routes: Routes = [
     loadComponent: () => import('./features/create-edit-article/create-edit-article').then(m => m.CreateEditArticle),
     title: 'Edit article'
   },
+  {
+    path: 'settings', 
+    loadComponent: () => import('./features/settings/settings').then(m => m.Settings),
+    title: 'Settings'
+  },
+  {
+    path: 'profile/:username', 
+    loadComponent: () => import('./features/profile/profile').then(m => m.Profile),
+    title: 'Profile'
+  },
 ];

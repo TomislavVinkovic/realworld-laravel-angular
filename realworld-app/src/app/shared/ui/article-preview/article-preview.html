@@ -1,14 +1,14 @@
 <div class="border-b border-gray-200 p-6">
   <div class="mb-4 flex justify-between items-start">
     <div class="flex items-center">
-      <a [routerLink]="['/profile', article().author.username]">
-        @if (article().author.image) {
+      <a [routerLink]="['/profile', article().author!.username]">
+        @if (article().author!.image) {
           <img 
-            [ngSrc]="article().author.image" 
+            [ngSrc]="article().author!.image" 
             width="32" 
             height="32" 
             class="rounded-full mr-2 object-cover bg-gray-200" 
-            [alt]="article().author.username" 
+            [alt]="article().author!.username" 
           />
         } @else {
           <img 
@@ -22,8 +22,8 @@
       </a>
 
       <div class="flex flex-col leading-4">
-        <a [routerLink]="['/profile', article().author.username]" class="font-medium text-emerald-600 hover:text-emerald-700 hover:underline">
-          {{ article().author.username }}
+        <a [routerLink]="['/profile', article().author!.username]" class="font-medium text-emerald-600 hover:text-emerald-700 hover:underline">
+          {{ article().author!.username }}
         </a>
         <span class="text-xs text-gray-400 font-light">
           {{ article().createdAt | date:'longDate' }}

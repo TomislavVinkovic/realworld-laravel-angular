@@ -1,5 +1,4 @@
 import { Component, computed, inject, OnInit, signal } from '@angular/core';
-import { HomeService } from '../../core/services/home-service';
 import { ArticlePreviewComponent } from '../../shared/ui/article-preview/article-preview';
 import { PopularTags } from "../../shared/ui/popular-tags/popular-tags";
 import { Article } from '../../core/models/article';
