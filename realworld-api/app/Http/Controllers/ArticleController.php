@@ -71,8 +71,12 @@ class ArticleController extends Controller
         $page = intdiv($offset, $perPage);
 
         $articles = Article::query()
+            ->with(['author'])
             ->withCount('favorited')
-            ->orderBy('created_at', 'desc');
+            ->withExists(['favorited as is_favorited' => function ($query) {
+                $query->where('user_id', auth('api')->id());
+            }])
+            ->latest();
 
         if(!is_null($tag)) {
             $articles = $articles->whereHas('tags', function(Builder $query) use ($tag) {

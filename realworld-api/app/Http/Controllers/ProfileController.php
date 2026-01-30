@@ -15,10 +15,13 @@ class ProfileController extends Controller
         $authenticatedUser = auth('api')->user();
         $isFollowing = false;
 
-        $isFollowing = $authenticatedUser->following()
-            ->where('follower_id', $user->id)
-            ->exists();
+        if($authenticatedUser) {
+            $isFollowing = $authenticatedUser->following()
+                ->where('follower_id', $user->id)
+                ->exists();
+        }
         
+        $user->isFollowing = $isFollowing;
         return new ProfileResource($user);
     }
 
